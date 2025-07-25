@@ -18,23 +18,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20' 
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
 
-      - name: Deploy to Vercel (production)
-        # run vercel deploy in your frontend folder
-        working-directory: frontend
-        run: |
-          # Pull existing project settings
-          vercel pull --yes \
-            --org $VERCEL_ORG_ID \
-            --project $VERCEL_PROJECT_ID \
-            --environment=production \
-            --token $VERCEL_TOKEN
+    - name: Install project dependencies
+      working-directory: frontend
+      run: npm install
 
-          # Build and deploy
-          vercel build --prod --token $VERCEL_TOKEN
-          vercel deploy --prebuilt --prod --token $VERCEL_TOKEN
+    - name: Install Vercel CLI
+      run: npm install --global vercel@latest
+
+    - name: Pull Vercel env info
+      working-directory: frontend
+      run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+
+    - name: Build project
+      working-directory: frontend
+      run: vercel build --prod --token=$VERCEL_TOKEN
+
+    - name: Deploy to Vercel
+      working-directory: frontend
+      run: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
