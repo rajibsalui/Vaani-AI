@@ -4,9 +4,8 @@ name: Vercel Production Deployment
 # Run on push to main OR PRs targeting main
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
